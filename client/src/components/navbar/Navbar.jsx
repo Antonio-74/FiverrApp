@@ -73,6 +73,7 @@ function Navbar() {
                         <span>Test</span>
                         <span>Test2</span>
                     </div>
+                    <hr />
                 </>
             )}
         </div>
