@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.scss';
+import newRequest from '../../utils/newRequest';
 
 function Navbar() {
 
     const [active, setActive] = useState(false);
     const [open, setOpen] = useState(false);
     const {pathname} = useLocation();
+
+    const navigate = useNavigate();
 
     const isActive = () => {
         window.scrollY > 0 ? setActive(true) : setActive(false);
@@ -20,10 +23,16 @@ function Navbar() {
         }
     }, []);
 
-    const currentUser = {
-        id: 1,
-        username: 'Aera White',
-        isSeller: true
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+    const handleLogout = async () => {
+        try {
+            await newRequest.post('/auth/logout');
+            localStorage.setItem('currentUser', null);
+            navigate('/');
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     return (
@@ -47,7 +56,9 @@ function Navbar() {
                             className='user' 
                             onClick={() => setOpen(!open)}
                         >
-                            <img src='https://images.pexels.com/photos/1115697/pexels-photo-1115697.jpeg?auto=compress&cs=tinysrgb&w=1600' alt='' />
+                            <img 
+                                src={currentUser.img || '/img/noavatar.jpg'} 
+                                alt='' />
                             <span>{currentUser?.username}</span>
                             {open && 
                                 <div className='options'>
@@ -59,7 +70,7 @@ function Navbar() {
                                     )}
                                     <Link className='link' to='/orders'><span>Orders</span></Link>
                                     <Link className='link' to='/messages'><span>Messages</span></Link>
-                                    <Link className='link' to='/'><span>Logout</span></Link>
+                                    <Link className='link' onClick={handleLogout}><span>Logout</span></Link>
                                 </div>
                             }
                         </div>
